@@ -3,10 +3,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>coding website
-    </title>
+    <meta name="theme-color" content="#10120f">
+    <meta name="description" content="Your home for live scores, fixtures, and the sports you follow.">
+    <title>Fieldhouse — Every game, one place</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #10120f;
+            --surface: #181a17;
+            --surface-raised: #20221e;
+            --border: #2a2d28;
+            --text: #f2f1e9;
+            --muted: #93958d;
+            --green: #c8fa65;
+            --green-dark: #19220d;
+            --orange: #ff765e;
+            --font: "DM Sans", sans-serif;
+            --display: "Space Grotesk", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font);
+            font-size: 14px;
+            min-width: 320px;
+        }
+        button, input { font: inherit; }
+        button { color: inherit; }
+        .app { min-height: 100vh; }
+        .topbar {
+            height: 72px;
+            display: flex;
+            align-items: center;
+            padding: 0 5.3%;
+            border-bottom: 1px solid var(--border);
+            gap: 48px;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 0 0 auto;
+            text-decoration: none;
+            color: var(--text);
+            font-family: var(--display);
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -1px;
+        }
+        .brand-mark {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: var(--green);
+            color: #14170e;
+            font-size: 17px;
+        }
+        .nav-links { display: flex; align-items: center; gap: 28px; height: 100%; }
+        .nav-link {
+            height: 100%;
+            padding: 2px 0 0;
+            border: 0;
+            border-bottom: 2px solid transparent;
+            background: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .nav-link.active { border-bottom-color: var(--green); color: var(--text); }
+        .topbar-right { display: flex; align-items: center; gap: 18px; margin-left: auto; }
+        .date-label { color: var(--muted); font-size: 12px; }
+        .avatar {
+            width: 34px;
+            height: 34px;
+            display: grid;
+            place-items: center;
+            border: 1px solid #44473e;
+            border-radius: 50%;
+            background: #282a23;
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 700;
+        }
+        main { width: min(1120px, 89.4%); margin: 0 auto; padding: 40px 0 64px; }
+        .eyebrow {
+            margin: 0 0 11px;
+            color: var(--green);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+        }
+        h1, h2, p { margin-top: 0; }
+        h1 {
+            margin-bottom: 8px;
+            font-family: var(--display);
+            font-size: clamp(29px, 4vw, 40px);
+            letter-spacing: -1.8px;
+            line-height: 1.1;
+        }
+        .intro { margin-bottom: 27px; color: var(--muted); font-size: 13px; }
+        .hero-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+        .date-picker { display: flex; align-items: center; gap: 8px; padding-bottom: 28px; }
+        .date-button, .icon-button {
+            display: grid;
+            place-items: center;
+            height: 34px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            cursor: pointer;
+        }
+        .date-button { width: 34px; color: var(--muted); font-size: 17px; }
+        .date-button:hover, .icon-button:hover { border-color: #53564b; color: var(--green); }
+        .date-current { padding: 0 8px; font-size: 12px; font-weight: 600; }
+        .date-current span { margin-right: 7px; color: var(--muted); font-weight: 400; }
+        .live-strip {
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 3px 0 31px;
+            padding: 0 17px;
+            border: 1px solid #39332b;
+            border-radius: 10px;
+            background: linear-gradient(100deg, #211e19, #191a16);
+        }
+        .live-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            color: var(--orange);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--orange); box-shadow: 0 0 10px #ff765e88; }
+        .live-strip-text { color: #b6b4aa; font-size: 12px; }
+        .live-strip-text strong { color: var(--text); }
+        .live-count { margin-left: auto; color: var(--muted); font-size: 11px; }
+        .layout { display: grid; grid-template-columns: minmax(0, 1fr) 292px; gap: 27px; align-items: start; }
+        .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .section-heading h2 { margin: 0; font-family: var(--display); font-size: 17px; letter-spacing: -.5px; }
+        .section-meta { color: var(--muted); font-size: 11px; }
+        .sport-tabs { display: flex; gap: 7px; overflow-x: auto; margin-bottom: 17px; padding-bottom: 2px; scrollbar-width: none; }
+        .sport-tabs::-webkit-scrollbar { display: none; }
+        .sport-tab {
+            padding: 8px 13px;
+            border: 1px solid var(--border);
+            border-radius: 7px;
+            background: var(--surface);
+            color: var(--muted);
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .sport-tab:hover { color: var(--text); }
+        .sport-tab.active { border-color: #45532b; background: var(--green-dark); color: var(--green); }
+        .matches { display: grid; gap: 10px; }
+        .match-card {
+            padding: 15px 16px 14px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            transition: border-color .2s, transform .2s;
+        }
+        .match-card:hover { transform: translateY(-1px); border-color: #41443b; }
+        .match-card[hidden] { display: none; }
+        .match-topline { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+        .league-icon { font-size: 13px; }
+        .league-name { color: #c1c0b7; font-size: 10px; font-weight: 700; }
+        .league-round { color: #777a72; font-size: 10px; }
+        .match-status { display: inline-flex; align-items: center; gap: 6px; margin-left: auto; color: var(--muted); font-size: 10px; }
+        .match-status.live { color: var(--orange); font-weight: 700; }
+        .match-status.upcoming { color: var(--green); }
+        .match-main { display: grid; grid-template-columns: minmax(0, 1fr) 48px 80px 48px minmax(0, 1fr); align-items: center; }
+        .team { display: flex; align-items: center; gap: 9px; min-width: 0; }
+        .team.away { justify-content: flex-end; text-align: right; }
+        .team-name { overflow: hidden; color: #eeede6; font-size: 12px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+        .team-code { display: block; margin-top: 3px; color: #82847b; font-size: 9px; font-weight: 500; }
+        .team-logo {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            flex: 0 0 32px;
+            border: 1px solid #34372f;
+            border-radius: 9px;
+            background: #22241f;
+            font-size: 16px;
+        }
+        .score { text-align: center; font-family: var(--display); font-size: 19px; font-weight: 700; letter-spacing: .3px; }
+        .score.pending { color: #777a72; font-size: 14px; font-weight: 500; }
+        .score-separator { color: #696b64; text-align: center; font-size: 13px; }
+        .match-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 13px; padding-top: 10px; border-top: 1px solid #292b27; }
+        .venue { overflow: hidden; color: #81837a; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+        .match-actions { display: flex; gap: 6px; }
+        .icon-button { width: 27px; height: 27px; border-radius: 7px; color: #85877e; font-size: 13px; }
+        .icon-button.followed { border-color: #45532b; background: var(--green-dark); color: var(--green); }
+        .empty-state { display: none; padding: 34px 15px; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); text-align: center; font-size: 12px; }
+        .empty-state.visible { display: block; }
+        .sidebar { display: grid; gap: 17px; }
+        .side-card { padding: 17px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+        .side-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+        .side-heading h2 { margin: 0; font-family: var(--display); font-size: 14px; letter-spacing: -.3px; }
+        .text-button { padding: 0; border: 0; background: none; color: var(--green); cursor: pointer; font-size: 10px; font-weight: 600; }
+        .standing-head, .standing-row { display: grid; grid-template-columns: 19px minmax(0, 1fr) 22px 22px 26px; align-items: center; gap: 6px; }
+        .standing-head { padding-bottom: 8px; border-bottom: 1px solid var(--border); color: #73766e; font-size: 9px; font-weight: 700; text-align: center; }
+        .standing-head span:nth-child(2) { text-align: left; }
+        .standing-row { min-height: 35px; border-bottom: 1px solid #252723; font-size: 10px; text-align: center; }
+        .standing-row:last-child { border-bottom: 0; }
+        .standing-row .rank { color: #75786f; }
+        .standing-team { display: flex; align-items: center; gap: 7px; overflow: hidden; text-align: left; white-space: nowrap; }
+        .standing-team .mini-logo { font-size: 13px; }
+        .standing-team strong { overflow: hidden; font-size: 10px; font-weight: 600; text-overflow: ellipsis; }
+        .standing-row .points { color: var(--green); font-weight: 700; }
+        .standings-note { margin: 10px 0 0; color: #74776e; font-size: 9px; }
+        .follow-empty { display: none; padding: 14px 0 3px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+        .follow-empty.visible { display: block; }
+        .followed-list { display: grid; gap: 11px; }
+        .followed-item { display: flex; align-items: center; gap: 9px; font-size: 11px; }
+        .followed-item[hidden] { display: none; }
+        .followed-item .followed-label { flex: 1; }
+        .followed-item .remove-follow { border: 0; background: none; color: #7e8078; cursor: pointer; font-size: 14px; }
+        .followed-item .remove-follow:hover { color: var(--orange); }
+        .sidebar-callout { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid #34362d; border-radius: 10px; background: linear-gradient(135deg, #1d2117, #191a16); }
+        .callout-icon { font-size: 17px; }
+        .sidebar-callout strong { display: block; margin-bottom: 4px; font-size: 11px; }
+        .sidebar-callout p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+        .toast {
+            position: fixed;
+            right: 24px;
+            bottom: 24px;
+            z-index: 3;
+            padding: 11px 15px;
+            border: 1px solid #45532b;
+            border-radius: 9px;
+            background: #1d2415;
+            color: var(--green);
+            font-size: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px);
+            transition: opacity .2s, transform .2s;
+        }
+        .toast.visible { opacity: 1; transform: translateY(0); }
+        @media (max-width: 860px) {
+            .topbar { gap: 28px; padding: 0 5%; }
+            main { width: 90%; }
+            .layout { grid-template-columns: minmax(0, 1fr) 260px; gap: 17px; }
+        }
+        @media (max-width: 700px) {
+            .topbar { height: 62px; gap: 18px; }
+            .brand { font-size: 18px; }
+            .nav-links { gap: 15px; }
+            .nav-link { font-size: 11px; }
+            .date-label { display: none; }
+            main { width: 92%; padding-top: 30px; }
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+            .sidebar-callout { grid-column: 1 / -1; }
+            .date-picker { padding-bottom: 26px; }
+        }
+        @media (max-width: 480px) {
+            .topbar { padding: 0 4%; gap: 14px; }
+            .brand { font-size: 16px; gap: 7px; }
+            .brand-mark { width: 26px; height: 26px; }
+            .nav-links { gap: 11px; }
+            .nav-link { font-size: 10px; }
+            .topbar-right { gap: 0; }
+            .avatar { width: 30px; height: 30px; }
+            .hero-row { align-items: flex-start; }
+            .date-picker { gap: 4px; padding-top: 4px; }
+            .date-current { padding: 0 3px; font-size: 10px; white-space: nowrap; }
+            .date-current span { margin-right: 3px; }
+            .date-button { width: 29px; height: 31px; }
+            .match-card { padding: 13px 11px 12px; }
+            .match-main { grid-template-columns: minmax(0, 1fr) 36px 62px 36px minmax(0, 1fr); }
+            .team { gap: 6px; }
+            .team-logo { width: 27px; height: 27px; flex-basis: 27px; font-size: 14px; }
+            .team-name { font-size: 10px; }
+            .team-code { font-size: 8px; }
+            .score { font-size: 17px; }
+            .sidebar { grid-template-columns: 1fr; }
+            .sidebar-callout { grid-column: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+        }
+    </style>
 </head>
 <body>
-    
+    <div class="app">
+        <header class="topbar">
+            <a class="brand" href="#" aria-label="Fieldhouse home"><span class="brand-mark">↗</span>fieldhouse</a>
+            <nav class="nav-links" aria-label="Main navigation">
+                <button class="nav-link active" type="button" data-view="scores">Scores</button>
+                <button class="nav-link" type="button" data-view="schedule">Schedule</button>
+                <button class="nav-link" type="button" data-view="news">News</button>
+            </nav>
+            <div class="topbar-right">
+                <span class="date-label">Monday, November 2</span>
+                <div class="avatar" aria-label="Your profile">JD</div>
+            </div>
+        </header>
+
+        <main>
+            <div class="hero-row">
+                <div>
+                    <p class="eyebrow">Monday, November 2, 2026</p>
+                    <h1>Every game, one place.</h1>
+                    <p class="intro">The scores that matter to you. All in real time.</p>
+                </div>
+                <div class="date-picker" aria-label="Choose a date">
+                    <button class="date-button" type="button" aria-label="Previous day">‹</button>
+                    <div class="date-current"><span>MON</span> NOV 2</div>
+                    <button class="date-button" type="button" aria-label="Next day">›</button>
+                </div>
+            </div>
+
+            <div class="live-strip">
+                <span class="live-pill"><span class="live-dot"></span> LIVE NOW</span>
+                <span class="live-strip-text"><strong>3 games</strong> are on right now</span>
+                <span class="live-count">Across 2 sports</span>
+            </div>
+
+            <div class="layout">
+                <section aria-labelledby="matches-title">
+                    <div class="section-heading">
+                        <h2 id="matches-title">Today's matchups</h2>
+                        <span class="section-meta" id="match-count">6 games</span>
+                    </div>
+                    <div class="sport-tabs" role="group" aria-label="Filter by sport">
+                        <button class="sport-tab active" type="button" data-filter="all">All sports <span>6</span></button>
+                        <button class="sport-tab" type="button" data-filter="football">⚽ Football <span>3</span></button>
+                        <button class="sport-tab" type="button" data-filter="basketball">🏀 Basketball <span>2</span></button>
+                        <button class="sport-tab" type="button" data-filter="baseball">⚾ Baseball <span>1</span></button>
+                    </div>
+
+                    <div class="matches">
+                        <article class="match-card" data-sport="football" data-status="live">
+                            <div class="match-topline">
+                                <span class="league-icon">⚽</span><span class="league-name">PREMIER LEAGUE</span><span class="league-round">· Matchweek 10</span>
+                                <span class="match-status live"><span class="live-dot"></span> LIVE · 67′</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">🔴</span><div class="team-name">Arsenal<span class="team-code">ARS · Home</span></div></div>
+                                <div class="score">2</div><div class="score-separator">—</div><div class="score">1</div>
+                                <div class="team away"><div class="team-name">Chelsea<span class="team-code">CHE · Away</span></div><span class="team-logo">🔵</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">Emirates Stadium · London</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Arsenal vs Chelsea" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+
+                        <article class="match-card" data-sport="basketball" data-status="live">
+                            <div class="match-topline">
+                                <span class="league-icon">🏀</span><span class="league-name">NBA</span><span class="league-round">· Regular Season</span>
+                                <span class="match-status live"><span class="live-dot"></span> LIVE · Q3 08:42</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">🟣</span><div class="team-name">Lakers<span class="team-code">LAL · Home</span></div></div>
+                                <div class="score">78</div><div class="score-separator">—</div><div class="score">81</div>
+                                <div class="team away"><div class="team-name">Warriors<span class="team-code">GSW · Away</span></div><span class="team-logo">🟡</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">Crypto.com Arena · Los Angeles</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Lakers vs Warriors" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+
+                        <article class="match-card" data-sport="football" data-status="upcoming">
+                            <div class="match-topline">
+                                <span class="league-icon">⚽</span><span class="league-name">LA LIGA</span><span class="league-round">· Matchday 12</span>
+                                <span class="match-status upcoming">IN 1H 48M</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">⚪</span><div class="team-name">Real Madrid<span class="team-code">RMA · Home</span></div></div>
+                                <div class="score pending">—</div><div class="score-separator">—</div><div class="score pending">—</div>
+                                <div class="team away"><div class="team-name">Sevilla<span class="team-code">SEV · Away</span></div><span class="team-logo">🔴</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">Santiago Bernabéu · Madrid</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Real Madrid vs Sevilla" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+
+                        <article class="match-card" data-sport="baseball" data-status="live">
+                            <div class="match-topline">
+                                <span class="league-icon">⚾</span><span class="league-name">MLB · WORLD SERIES</span><span class="league-round">· Game 5</span>
+                                <span class="match-status live"><span class="live-dot"></span> LIVE · TOP 6TH</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">🔵</span><div class="team-name">Dodgers<span class="team-code">LAD · Home</span></div></div>
+                                <div class="score">4</div><div class="score-separator">—</div><div class="score">3</div>
+                                <div class="team away"><div class="team-name">Yankees<span class="team-code">NYY · Away</span></div><span class="team-logo">🧢</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">Dodger Stadium · Los Angeles</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Dodgers vs Yankees" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+
+                        <article class="match-card" data-sport="basketball" data-status="upcoming">
+                            <div class="match-topline">
+                                <span class="league-icon">🏀</span><span class="league-name">NBA</span><span class="league-round">· Regular Season</span>
+                                <span class="match-status upcoming">8:00 PM ET</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">🟢</span><div class="team-name">Celtics<span class="team-code">BOS · Home</span></div></div>
+                                <div class="score pending">—</div><div class="score-separator">—</div><div class="score pending">—</div>
+                                <div class="team away"><div class="team-name">Knicks<span class="team-code">NYK · Away</span></div><span class="team-logo">🟠</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">TD Garden · Boston</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Celtics vs Knicks" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+
+                        <article class="match-card" data-sport="football" data-status="upcoming">
+                            <div class="match-topline">
+                                <span class="league-icon">⚽</span><span class="league-name">SERIE A</span><span class="league-round">· Matchday 11</span>
+                                <span class="match-status upcoming">8:45 PM CET</span>
+                            </div>
+                            <div class="match-main">
+                                <div class="team"><span class="team-logo">⚫</span><div class="team-name">Inter Milan<span class="team-code">INT · Home</span></div></div>
+                                <div class="score pending">—</div><div class="score-separator">—</div><div class="score pending">—</div>
+                                <div class="team away"><div class="team-name">Napoli<span class="team-code">NAP · Away</span></div><span class="team-logo">🔵</span></div>
+                            </div>
+                            <div class="match-footer"><span class="venue">San Siro · Milan</span><div class="match-actions"><button class="icon-button follow-match" type="button" aria-label="Follow Inter Milan vs Napoli" aria-pressed="false" title="Follow match">☆</button><button class="icon-button match-details" type="button" aria-label="Match details" title="Match details">↗</button></div></div>
+                        </article>
+                    </div>
+                    <div class="empty-state" role="status">No games for this sport today. Try another filter.</div>
+                </section>
+
+                <aside class="sidebar" aria-label="Your sports dashboard">
+                    <section class="side-card">
+                        <div class="side-heading"><h2>Premier League</h2><button class="text-button" type="button">Full table ↗</button></div>
+                        <div class="standing-head"><span>#</span><span>CLUB</span><span>P</span><span>GD</span><span>PTS</span></div>
+                        <div class="standing-row"><span class="rank">1</span><span class="standing-team"><span class="mini-logo">🔴</span><strong>Arsenal</strong></span><span>10</span><span>+15</span><span class="points">25</span></div>
+                        <div class="standing-row"><span class="rank">2</span><span class="standing-team"><span class="mini-logo">🔵</span><strong>Man City</strong></span><span>10</span><span>+14</span><span class="points">23</span></div>
+                        <div class="standing-row"><span class="rank">3</span><span class="standing-team"><span class="mini-logo">⚫</span><strong>Liverpool</strong></span><span>10</span><span>+12</span><span class="points">22</span></div>
+                        <div class="standing-row"><span class="rank">4</span><span class="standing-team"><span class="mini-logo">⚪</span><strong>Tottenham</strong></span><span>10</span><span>+9</span><span class="points">20</span></div>
+                        <div class="standing-row"><span class="rank">5</span><span class="standing-team"><span class="mini-logo">🔴</span><strong>Aston Villa</strong></span><span>10</span><span>+8</span><span class="points">19</span></div>
+                        <p class="standings-note">2026/27 season · after matchweek 10</p>
+                    </section>
+
+                    <section class="side-card">
+                        <div class="side-heading"><h2>Your followed games</h2><span class="section-meta" id="follow-count">0</span></div>
+                        <div class="follow-empty visible">Tap the ☆ on any game to keep it close. Your picks live here.</div>
+                        <div class="followed-list" aria-live="polite"></div>
+                    </section>
+
+                    <div class="sidebar-callout">
+                        <span class="callout-icon">🔔</span>
+                        <div><strong>Never miss a moment</strong><p>Follow a game to keep it in your personal lineup.</p></div>
+                    </div>
+                </aside>
+            </div>
+        </main>
+        <div class="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script>
+        const cards = [...document.querySelectorAll(".match-card")];
+        const sportTabs = [...document.querySelectorAll(".sport-tab")];
+        const matchCount = document.querySelector("#match-count");
+        const emptyState = document.querySelector(".empty-state");
+        const followedList = document.querySelector(".followed-list");
+        const followEmpty = document.querySelector(".follow-empty");
+        const followCount = document.querySelector("#follow-count");
+        const toast = document.querySelector(".toast");
+        let currentFilter = "all";
+        let currentView = "scores";
+        let toastTimer;
+
+        function updateMatches() {
+            let visible = 0;
+            cards.forEach((card) => {
+                const matchesSport = currentFilter === "all" || card.dataset.sport === currentFilter;
+                const matchesView = currentView !== "schedule" || card.dataset.status !== "live";
+                card.hidden = !matchesSport || !matchesView;
+                if (!card.hidden) visible += 1;
+            });
+            matchCount.textContent = `${visible} ${visible === 1 ? "game" : "games"}`;
+            emptyState.classList.toggle("visible", visible === 0);
+        }
+
+        function showToast(message) {
+            toast.textContent = message;
+            toast.classList.add("visible");
+            window.clearTimeout(toastTimer);
+            toastTimer = window.setTimeout(() => toast.classList.remove("visible"), 2200);
+        }
+
+        function updateFollowedGames() {
+            followedList.replaceChildren();
+            const followedCards = cards.filter((card) => card.querySelector(".follow-match").getAttribute("aria-pressed") === "true");
+            followCount.textContent = followedCards.length;
+            followEmpty.classList.toggle("visible", followedCards.length === 0);
+
+            followedCards.forEach((card) => {
+                const teams = card.querySelectorAll(".team-name");
+                const entry = document.createElement("div");
+                entry.className = "followed-item";
+                entry.innerHTML = `<span>${card.querySelector(".league-icon").textContent}</span><span class="followed-label">${teams[0].childNodes[0].textContent} vs ${teams[1].childNodes[0].textContent}</span>`;
+                const remove = document.createElement("button");
+                remove.type = "button";
+                remove.className = "remove-follow";
+                remove.setAttribute("aria-label", "Unfollow this game");
+                remove.textContent = "×";
+                remove.addEventListener("click", () => {
+                    const button = card.querySelector(".follow-match");
+                    button.setAttribute("aria-pressed", "false");
+                    button.classList.remove("followed");
+                    button.textContent = "☆";
+                    updateFollowedGames();
+                    showToast("Game removed from your lineup");
+                });
+                entry.append(remove);
+                followedList.append(entry);
+            });
+        }
+
+        sportTabs.forEach((tab) => tab.addEventListener("click", () => {
+            currentFilter = tab.dataset.filter;
+            sportTabs.forEach((item) => item.classList.toggle("active", item === tab));
+            updateMatches();
+        }));
+
+        document.querySelectorAll(".follow-match").forEach((button) => button.addEventListener("click", () => {
+            const following = button.getAttribute("aria-pressed") !== "true";
+            button.setAttribute("aria-pressed", String(following));
+            button.classList.toggle("followed", following);
+            button.textContent = following ? "★" : "☆";
+            updateFollowedGames();
+            showToast(following ? "Game added to your lineup" : "Game removed from your lineup");
+        }));
+
+        document.querySelectorAll(".match-details").forEach((button) => button.addEventListener("click", () => {
+            const teams = button.closest(".match-card").querySelectorAll(".team-name");
+            showToast(`${teams[0].childNodes[0].textContent} vs ${teams[1].childNodes[0].textContent}`);
+        }));
+
+        document.querySelectorAll(".nav-link").forEach((button) => button.addEventListener("click", () => {
+            document.querySelectorAll(".nav-link").forEach((item) => item.classList.toggle("active", item === button));
+            if (button.dataset.view === "news") {
+                showToast("News is coming soon");
+            } else {
+                currentView = button.dataset.view;
+                document.querySelector("#matches-title").textContent = currentView === "schedule" ? "Upcoming games" : "Today's matchups";
+                updateMatches();
+            }
+        }));
+
+        document.querySelectorAll(".date-button").forEach((button) => button.addEventListener("click", () => {
+            showToast("You're viewing Monday, November 2");
+        }));
+
+        document.querySelector(".text-button").addEventListener("click", () => showToast("Full standings are coming soon"));
+    </script>
 </body>
 </html>
